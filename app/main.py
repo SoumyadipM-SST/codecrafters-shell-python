@@ -4,7 +4,6 @@ import subprocess
 import threading
 from pathlib import Path
 
-# --- Global State ---
 current_directory = Path(os.getcwd()).absolute()
 background_jobs = []
 BUILTINS = ["echo", "type", "exit", "pwd", "cd", "jobs"]
@@ -65,11 +64,9 @@ def main():
             handle_pipeline(tokens, is_background)
             continue
             
-        # Standard Builtin/External command handling (Non-piped execution)
         execute_single_command(tokens, is_background, None, None)
 
 
-# --- Core Pipeline Handling with Builtin Support ---
 def handle_pipeline(tokens, is_background):
     global background_jobs, current_directory
     
@@ -89,7 +86,6 @@ def handle_pipeline(tokens, is_background):
     processes = []
     threads = []
 
-    # Create inter-process communication pipes
     pipes = []
     for _ in range(num_cmds - 1):
         try:
@@ -117,7 +113,6 @@ def handle_pipeline(tokens, is_background):
                 try:
                     execute_builtin(args, in_stream, out_stream, sys.stderr)
                 finally:
-                    # Match Java's try/finally closure on the out stream
                     if out_fd != 1:
                         try: out_stream.close()
                         except: pass
@@ -148,7 +143,6 @@ def handle_pipeline(tokens, is_background):
                 sys.stdout.write(f"Error starting pipeline process: {e}\n")
                 sys.stdout.flush()
 
-            # Parent closes FDs it handed off to processes (duplicates)
             if stage_in_fd != 0:
                 try: os.close(stage_in_fd)
                 except: pass
