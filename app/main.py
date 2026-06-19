@@ -26,7 +26,6 @@ class BackgroundJob:
                 return True
         return False
 
-
 def main():
     global current_directory
     
